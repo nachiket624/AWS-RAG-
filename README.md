@@ -1,90 +1,79 @@
-📘 Retrieval-Augmented Generation (RAG) Pipeline on AWS
+# Retrieval-Augmented Generation (RAG) Pipeline on AWS
 
-This project implements a complete Retrieval-Augmented Generation (RAG) workflow using Amazon Bedrock, AWS Glue, Amazon OpenSearch Service, Amazon DynamoDB, and Amazon S3.
-The goal is to build a scalable, secure, and production-ready architecture that extracts knowledge from documents and allows LLMs to answer questions using that knowledge.
+This project implements a complete Retrieval-Augmented Generation (RAG) workflow using Amazon Bedrock, AWS Glue, Amazon OpenSearch Service, Amazon DynamoDB, and Amazon S3.  
+The system extracts knowledge from documents and enables LLMs to answer questions using that knowledge.
 
-🏗️ Architecture Overview
+---
 
-🔹 Components
-1. Amazon S3 (Document Storage)
+## 📘 Architecture Overview
 
-All input documents—PDFs, text files, Word files, reports—are stored in an S3 bucket.
-This acts as the central storage for the entire knowledge ingestion pipeline.
+![Architecture Diagram](./Blank%20diagram.png)
 
-2. AWS Glue (ETL Jobs)
+### Components
 
-AWS Glue jobs perform:
+#### 1. Amazon S3 (Document Storage)
+Stores all raw documents (PDF, TXT, DOCX, reports, etc.).  
+Acts as the central repository for ingestion.
 
-Document extraction
+#### 2. AWS Glue (ETL Jobs)
+Responsible for:
+- Extracting text  
+- Cleaning and preprocessing  
+- Chunking documents  
+- Preparing data for embeddings  
 
-Text parsing
+#### 3. Amazon Bedrock (Embeddings)
+Uses Bedrock embedding models to convert document chunks into vector representations.
 
-Chunking/splitting
+#### 4. Vector Store
+The generated embeddings and metadata are stored in:
 
-Preprocessing (cleaning, formatting)
+- **Amazon OpenSearch Service** – Vector similarity search  
+- **Amazon DynamoDB** – Metadata and fast index lookup  
 
-The output is ready for vector embedding generation.
+Together these form the retrieval layer.
 
-3. Amazon Bedrock (Embeddings)
+#### 5. Amazon Bedrock (LLM – Llama3)
+The Large Language Model (LLM) generates final answers using:
+- User query  
+- Retrieved chunks from OpenSearch  
 
-Processed chunks from Glue are passed to Amazon Bedrock’s embedding model.
-Bedrock transforms each document chunk into a numerical vector representation.
+This creates a grounded and accurate response using RAG.
 
-4. Vector Store
+---
 
-Vector embeddings and metadata are stored in:
+## 🚀 End-to-End Workflow
 
-Amazon OpenSearch Service — for vector similarity search
+1. Upload documents to **Amazon S3**.  
+2. **AWS Glue** extracts and preprocesses the text.  
+3. Bedrock generates embeddings for each text chunk.  
+4. Embeddings + metadata stored in **OpenSearch** + **DynamoDB**.  
+5. User submits a query.  
+6. Relevant chunks are retrieved using similarity search.  
+7. Context + query is sent to Bedrock LLM.  
+8. A final answer is generated using RAG.
 
-Amazon DynamoDB — for metadata indexing and fast key-value lookups
+---
 
-This forms the knowledge base that powers retrieval.
+## 🧩 Features
 
-5. Amazon Bedrock (LLM – Llama3)
+- Fully serverless ingestion pipeline  
+- Scalable vector search using OpenSearch  
+- Bedrock-powered embeddings & LLMs  
+- DynamoDB for fast metadata lookup  
+- Suitable for enterprise knowledge bases, chatbots, and AI search systems  
 
-A Bedrock-hosted LLM generates accurate responses based on:
+---
 
-User query
+## 🛠️ Tech Stack
 
-Retrieved context from the vector store
+| Component | Service |
+|----------|---------|
+| Document Storage | Amazon S3 |
+| ETL Processing | AWS Glue |
+| Embedding Model | Amazon Bedrock |
+| Vector Search | Amazon OpenSearch Service |
+| Metadata Storage | DynamoDB |
+| LLM | Amazon Bedrock (Llama3 or others) |
 
-This enables high-quality Retrieval-Augmented Generation.
-
-🚀 End-to-End Workflow
-
-Upload documents to Amazon S3.
-
-AWS Glue extracts and preprocesses the text.
-
-Clean chunks are sent to Amazon Bedrock Embeddings.
-
-Generated vectors are stored in OpenSearch alongside metadata in DynamoDB.
-
-User submits a query.
-
-System retrieves semantically similar document chunks from OpenSearch.
-
-Retrieved context is fed to Bedrock LLM (Llama3).
-
-The LLM generates a final grounded answer.
-
-🧩 Features
-
-🔹 End-to-end serverless ingestion
-
-🔹 Highly scalable vector search engine
-
-🔹 Fast and reliable metadata indexing
-
-🔹 Bedrock-powered embeddings and LLM reasoning
-
-🔹 Suitable for enterprise knowledge bases and AI search applications
-
-📦 Tech Stack
-Layer	Service
-Storage	Amazon S3
-ETL	AWS Glue
-Embeddings	Amazon Bedrock
-Vector Search	Amazon OpenSearch Service
-Metadata DB	DynamoDB
-LLM	Amazon Bedrock (Llama3 or other models)
+---
